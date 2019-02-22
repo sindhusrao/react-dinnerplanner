@@ -1,0 +1,30 @@
+.Welcome {
+
+    text-align: center;
+}
+
+.StartPlanningBtn{
+  margin-left: 5;
+  margin-right: 5;
+  margin-top: 15px;
+  margin-bottom: 15px;
+
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+.WelcomeTextH{
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+  
+.WelcomeTextP{
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
