@@ -8,6 +8,7 @@ import { Container, Row, Col } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
 
+
 class DishHeader extends React.Component {
   render() {
     const { image } = this.props;
@@ -44,6 +45,7 @@ class Dishes extends Component {
     }
   }
 
+
   // this methods is called by React lifecycle when the 
   // component is actually shown to the user (mounted to DOM)
   // that's a good place to call the API and get the data
@@ -63,6 +65,29 @@ class Dishes extends Component {
     })
   }
 
+
+  componentDidUpdate = (prevProps, prevState) => {
+    // when data is retrieved we update the state
+    // this will cause the component to re-render
+   
+    if (this.props.type != prevProps.type || this.props.filter != prevProps.filter ){
+    modelInstance.getAllDishes(this.props.type,this.props.filter).then(dishes => {
+      {console.log('calling update model',this.props)}
+      this.setState({
+        status: 'LOADED',
+        dishes: dishes.results
+      })
+    }).catch(() => {
+      this.setState({
+        status: 'ERROR'
+      })
+    })
+    }
+  }
+
+  componentWillUnmount() {
+  }
+
   render() {
     let dishesList = null;
 
@@ -75,10 +100,11 @@ class Dishes extends Component {
         break;
       case 'LOADED':
         dishesList = this.state.dishes.map((dish) =>
-          <div onClick={console.log('looping',dish, this.props)} id="dish.id"  key={dish.id} className="card">
-            <Link to={{pathname: '/DishDetails', state:{dish}}}>
-              <DishHeader image={'https://spoonacular.com/recipeImages/' + dish.image} />
-              <DishBody title={dish.title} />
+          <div id="dish.id"  key={dish.id} className="card">
+            {console.log('looping',dish, this.props)}
+            <Link to={{pathname: '/DishDetails/'+dish.id }}>
+               <DishHeader image={'https://spoonacular.com/recipeImages/' + dish.image} />
+               <DishBody title={dish.title} />
             </Link>
           </div>
         )

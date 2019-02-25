@@ -4,21 +4,22 @@ import { Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.css' ;
 import{Container, Row, Col} from 'reactstrap';
 import{Button} from 'reactstrap';
+import { Divider, Grid, Image, Segment } from 'semantic-ui-react'
+
+//cookies
+import cookie from 'react-cookies'
+
 
 class Sidebar extends Component {
 
   constructor(props) {
     super(props)
-    
+
     // we put on state the properties we want to use and modify in the component
     this.state = {
       numberOfGuests: this.props.model.getNumberOfGuests(),
-      list: [
-        {name: "dish 1" , price : 2},
-        {name: "dish 2" , price : 2},
-        {name: "dish 3" , price : 2},
-      ],
-      totalCost: 0
+      menu : this.props.model.getMenu(),
+      totalCost: 0, 
 
     }
   }
@@ -28,6 +29,13 @@ class Sidebar extends Component {
   // that's a good place to setup model observer
   componentDidMount() {
     this.props.model.addObserver(this)
+
+    //cookies
+    this.state =  { 
+      numberOfGuests: cookie.load('numberOfGuests'),
+      menu : this.props.model.getMenu(),
+    }
+
   }
 
   // this is called when component is removed from the DOM
@@ -36,12 +44,20 @@ class Sidebar extends Component {
     this.props.model.removeObserver(this)
   }
 
+
   // in our update function we modify the state which will
   // cause the component to re-render
   update() {
     this.setState({
-      numberOfGuests: this.props.model.getNumberOfGuests()
+      numberOfGuests: this.props.model.getNumberOfGuests(),
+      menu : this.props.model.getMenu()
     })
+
+    cookie.save('numberOfGuests', this.props.model.getNumberOfGuests(), { path: '/' })
+   // cookie.save('menu', this.props.model.getMenu(), { path: '/' })
+    console.log("cookie menu :", cookie.load('menu'))
+    console.log("cookie numberOfGuests :", cookie.load('numberOfGuests'))
+
   }
 
   // our handler for the input's on change event
@@ -49,23 +65,38 @@ class Sidebar extends Component {
     this.props.model.setNumberOfGuests(+e.target.value)
   }
 
+  countIngredients(dish){
+    let ingredientCount = 0;
+    dish.extendedIngredients.map((ingredient) =>
+      ingredientCount++  
+    )
+    return ingredientCount;
+  } 
+
+  doSomething(dish){
+    this.props.model.removeDishFromMenu(dish.id)
+    console.log("dish dish removed from meu "+dish.title)
+    console.log("get menu after delete: " +this.props.model.getMenu())
+  }
   
   
 
   render() {
 
     /*rows to the menu table in sidebar*/
-    const rows = this.state.list.map((dish) =>
+    const rows = this.state.menu.map((dish) =>
       <tr>
          
-        {Object.keys(dish).map(function(attr) {
+        {/* {Object.keys(dish).map(function(attr) {
           return (
             <td className="tableCell">{dish[attr]}</td>
             
           )
-        })}
+        })} */}
+        <td> {dish.title}</td>
+        <td> {this.countIngredients(dish)*this.state.numberOfGuests}</td>
  
-       <Button className="deleteDish" variant="info">x</Button>
+       <Button className="deleteDish" variant="info" onClick={() => this.doSomething(dish)}>x</Button>
 
       </tr>
     )
@@ -73,9 +104,9 @@ class Sidebar extends Component {
 
     /*total cost calculation*/
       const arrSum = arr => arr.reduce((a,b) => a + b, 0)
-      var totalCostArray = this.state.list.map((dish) =>  dish.price * this.state.numberOfGuests)
+      var totalCostArray = this.state.menu.map((dish) =>  this.countIngredients(dish) * this.state.numberOfGuests)
       var totalCost = arrSum(totalCostArray)
-    
+     
     return (
   
       <Col className="Sidebar" xs={12} md={4} large={4}>
@@ -109,7 +140,7 @@ class Sidebar extends Component {
                     <button>Confirm Dinner</button>
               </Link>
           </Row> 
-        </Col>
+    </Col>
     
     );
   }

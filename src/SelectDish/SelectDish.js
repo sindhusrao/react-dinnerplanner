@@ -102,9 +102,9 @@ class SelectDish extends Component {
                       <option value="all">all</option>
                       {showTypes}
                     </select>
-                    { <button className="buttonis-info" onClick={this.searchFilterHandler}>
+                    {/* <button className="buttonis-info" onClick={this.searchFilterHandler}>
                       Search
-                    </button> }
+                    </button> */}
                   </form>
                 </section>
 

@@ -38,14 +38,19 @@ class DinnerOverview extends Component {
     super(props);
     this.state = {
       numberOfGuests: this.props.model.getNumberOfGuests(),
-      list: [
-        "dish 1 image here",
-        "dish 2 image here",
-        "dish 3 image here"
-      ]
+      menu : this.props.model.getMenu() //here fetch from dinnerModel menu the dishes from sideBar
     }
 
   }
+
+  countIngredients(dish){
+    let ingredientCount = 0;
+    dish.extendedIngredients.map((ingredient) =>
+      ingredientCount++  
+    )
+    return ingredientCount;
+  } 
+
 
    // this methods is called by React lifecycle when the 
   // component is actually shown to the user (mounted to DOM)
@@ -53,40 +58,52 @@ class DinnerOverview extends Component {
   componentDidMount = () => {
     // when data is retrieved we update the state
     // this will cause the component to re-render
-    modelInstance.getAllDishes().then(dishes => {
-      this.setState({
-        status: 'LOADED',
-        dishes: dishes.results
-      })
-    }).catch(() => {
-      this.setState({
-        status: 'ERROR'
-      })
-    })
+  //   modelInstance.getAllDishes().then(dishes => {
+  //     this.setState({
+  //       status: 'LOADED',
+  //       dishes: dishes.results
+  //     })
+  //   }).catch(() => {
+  //     this.setState({
+  //       status: 'ERROR'
+  //     })
+  //   })
   }
   
   render() {
-    let dishesList = null;
+    let dishMenu = null;
+
+      /*total cost calculation*/
+      const arrSum = arr => arr.reduce((a,b) => a + b, 0)
+      var totalCostArray = this.state.menu.map((dish) =>  this.countIngredients(dish) * this.state.numberOfGuests)
+      var totalCost = arrSum(totalCostArray)
+
+    dishMenu = this.state.menu.map((dish) =>
+          <div className="card">
+                  <DishHeader image={dish.image} />
+                  <DishBody title={dish.title} />
+          </div>
+        )
 
     // depending on the state we either generate
     // useful message to the user or show the list
     // of returned dishes
-    switch (this.state.status) {
-      case 'INITIAL':
-        dishesList = <em>Loading...</em>
-        break;
-      case 'LOADED':
-        dishesList = this.state.dishes.map((dish) =>
-          <div className="card">
-                  <DishHeader image={'https://spoonacular.com/recipeImages/'+dish.image} />
-                  <DishBody title={dish.title} />
-          </div>
-        )
-        break;
-      default:
-        dishesList = <b>Failed to load data, please try again</b>
-        break;
-    }
+    // switch (this.state.status) {
+    //   case 'INITIAL':
+    //     dishMenu = <em>Loading...</em>
+    //     break;
+    //   case 'LOADED':
+    //     dishMenu = this.state.menu.map((dish) =>
+    //       <div className="card">
+    //               <DishHeader image={'https://spoonacular.com/recipeImages/'+dish.image} />
+    //               <DishBody title={dish.title} />
+    //       </div>
+    //     )
+    //     break;
+    //   default:
+    //     dishMenu = <b>Failed to load data, please try again</b>
+    //     break;
+    // }
     return (
       <div className="DinnerOverview">
 
@@ -103,11 +120,11 @@ class DinnerOverview extends Component {
       <hr/>
       <Row className="row">
   
-           {dishesList}
+           {dishMenu}
 
       </Row>
       <Row className="row">
-        <p>Total Price: //priceSum// * {this.state.numberOfGuests} SEK</p>
+        <p>Total Price: {totalCost}  SEK</p>
        
       </Row>
       <Row className="row">

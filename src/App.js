@@ -33,8 +33,10 @@ class App extends Component {
           <Route path="/search" render={() => <SelectDish model={modelInstance}/>}/> 
           <Route path="/DinnerOverview" render={() => <DinnerOverview model={modelInstance}/>}/> 
           <Route path="/DinnerPrintout" render={() => <DinnerPrintout model={modelInstance}/>}/> 
-          <Route path="/DishDetails" render={() => <DishDetails model={modelInstance}/>}/> 
-        
+          <Route path="/DishDetails/:id" render={(props) => <DishDetails {...props} model={modelInstance}/>}/> 
+           
+          
+
         {/* </header> */}
       </div>
     );
